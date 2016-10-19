@@ -1,8 +1,8 @@
 var snake = new Snake();
 var food = new Food();
-var scl = 40;
-var HEIGHT = 600;
-var WIDTH = 600;
+var scl = 50;
+var HEIGHT = 500;
+var WIDTH = 500;
 
 function setup() {
     createCanvas(WIDTH, HEIGHT);
@@ -74,6 +74,7 @@ function Snake() {
     this.eat = function() {
         food.changePosition();
         this.tail.push([this.x, this.y]);
+		socket.emit('ate_food', [this.x, this.y]);
     };
 
     this.display = function() {
@@ -82,6 +83,7 @@ function Snake() {
         for(var i=0; i<this.tail.length; i++) {
             rect(this.tail[i][0],this.tail[i][1], scl, scl);
         }
+		socket.emit("coords", [this.x, this.y]);
     };
 }
 
