@@ -20,8 +20,8 @@ function Food() {
     this.x = 0;
     this.y = 0;
     this.show = function() {
-        noStroke();
-        fill(60, 205, 20);
+        // noStroke();
+        fill(255, 159, 25);
         rect(this.x, this.y, scl, scl);
     };
     this.changePosition = function() {
@@ -77,7 +77,7 @@ function Snake() {
     };
 
     this.display = function() {
-        fill(200, 10, 20);
+        fill(255, 255, 255);
         // rect(this.x, this.y, scl, scl);
         for(var i=0; i<this.tail.length; i++) {
             rect(this.tail[i][0],this.tail[i][1], scl, scl);
