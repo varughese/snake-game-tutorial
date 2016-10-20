@@ -1,6 +1,6 @@
 var socket = io();
 
-socket.on('ate_food', function(msg) {
+socket.on('pop_enemy', function(msg) {
 	console.log("ate food");
 	snake.tail.pop();
 });

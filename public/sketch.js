@@ -1,6 +1,6 @@
-var snake = new Snake();
-var otherSnake = new Snake(true);
-var food = new Food();
+var snake;
+var otherSnake;
+var food;
 var scl = 50;
 var HEIGHT = 500;
 var WIDTH = 500;
@@ -8,6 +8,9 @@ var WIDTH = 500;
 function setup() {
     createCanvas(WIDTH, HEIGHT);
     frameRate(10);
+    snake = new Snake();
+    otherSnake = new Snake(true);
+    food = new Food();
 }
 
 function draw() {
@@ -26,17 +29,41 @@ function Food() {
         fill(255, 159, 25);
         rect(this.x, this.y, scl, scl);
     };
-    this.changePosition = function() {
-        this.x = Math.floor(random(0, WIDTH/scl)) * scl;
-        this.y = Math.floor(random(0, HEIGHT/scl)) * scl;
+
+    function inTail(x, y, tail) {
+        for(var i=0; i<tail.length; i++) {
+            if(tail[i][0] === x && tail[i][1] === y) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    this.changePosition = function(tail) {
+        var x, y;
+        var protection = 0;
+        do {
+            protection++;
+            if(protection > 140) {
+                console.log("break");
+                break;
+            }
+            x = Math.floor(random(0, WIDTH/scl)) * scl;
+            y = Math.floor(random(0, HEIGHT/scl)) * scl;
+        } while (inTail(x, y, tail));
+
+        this.x = x;
+        this.y = y;
+
     };
 }
 
 function Snake(other) {
     this.tail = [];
-    this.x = 0;
+    this.x = floor(WIDTH / scl / 2) * scl;
     this.color = other ? [20,20,20] : [255,255,255];
-    this.y = 0;
+    this.y = floor(HEIGHT / scl / 2) * scl;
+    this.enemy = !!other;
     this.direction = "RIGHT";
     this.update = function() {
         if(this.direction === "RIGHT") {
@@ -70,14 +97,25 @@ function Snake(other) {
             this.tail[i] = this.tail[i-1];
         }
 
+        for(var t=0; t<otherSnake.tail.length; t++) {
+            if(otherSnake.tail[t][0] === this.x &&
+               otherSnake.tail[t][1] === this.y ) {
+                   if(this.tail.length > otherSnake.tail.length) {
+                       socket.emit('pop_enemy');
+                   } else {
+                       this.tail.pop();
+                   }
+            }
+        }
+
         this.tail[0] = [this.x, this.y];
-		socket.emit("coords", [this.x, this.y, this.tail]);
+        if(!this.enemy) socket.emit("coords", [this.x, this.y, this.tail]);
     };
 
     this.eat = function() {
-        food.changePosition();
+        food.changePosition(this.tail);
         this.tail.push([this.x, this.y]);
-		socket.emit('ate_food', [this.x, this.y]);
+		socket.emit('pop_enemy', [this.x, this.y]);
     };
 
     this.display = function() {

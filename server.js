@@ -16,8 +16,8 @@ io.on('connection', function(socket){
 	  console.log("user disconnected");
   });
 
-  socket.on('ate_food', function(msg){
-	socket.broadcast.emit('ate_food', msg);
+  socket.on('pop_enemy', function(msg){
+	socket.broadcast.emit('pop_enemy', msg);
   });
 
   socket.on("coords", function(coords) {
