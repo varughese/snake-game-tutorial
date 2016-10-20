@@ -1,4 +1,5 @@
 var snake = new Snake();
+var otherSnake = new Snake(true);
 var food = new Food();
 var scl = 50;
 var HEIGHT = 500;
@@ -13,6 +14,7 @@ function draw() {
     background(51);
     snake.update();
     food.show();
+    otherSnake.display();
     snake.display();
 }
 
@@ -30,9 +32,10 @@ function Food() {
     };
 }
 
-function Snake() {
+function Snake(other) {
     this.tail = [];
     this.x = 0;
+    this.color = other ? [20,20,20] : [255,255,255];
     this.y = 0;
     this.direction = "RIGHT";
     this.update = function() {
@@ -68,7 +71,7 @@ function Snake() {
         }
 
         this.tail[0] = [this.x, this.y];
-
+		socket.emit("coords", [this.x, this.y, this.tail]);
     };
 
     this.eat = function() {
@@ -78,12 +81,12 @@ function Snake() {
     };
 
     this.display = function() {
-        fill(255, 255, 255);
+        fill(this.color[0], this.color[1], this.color[2]);
         // rect(this.x, this.y, scl, scl);
         for(var i=0; i<this.tail.length; i++) {
             rect(this.tail[i][0],this.tail[i][1], scl, scl);
         }
-		socket.emit("coords", [this.x, this.y]);
+
     };
 }
 
