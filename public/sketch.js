@@ -1,13 +1,13 @@
 var snake;
 var otherSnake;
 var food;
-var scl = 50;
+var scl = 100;
 var HEIGHT = 500;
 var WIDTH = 500;
 
 function setup() {
     createCanvas(WIDTH, HEIGHT);
-    frameRate(10);
+    frameRate(12);
     snake = new Snake();
     otherSnake = new Snake(true);
     food = new Food();
@@ -65,6 +65,15 @@ function Snake(other) {
     this.y = floor(HEIGHT / scl / 2) * scl;
     this.enemy = !!other;
     this.direction = "RIGHT";
+    function checkCollision(x, y, tail) {
+        for(var t=0; t<tail.length; t++) {
+            if(tail[t][0] === x &&
+               tail[t][1] === y ) {
+                   return true;
+            }
+        }
+        return false;
+    }
     this.update = function() {
         if(this.direction === "RIGHT") {
             this.x = this.x + scl;
@@ -97,15 +106,16 @@ function Snake(other) {
             this.tail[i] = this.tail[i-1];
         }
 
-        for(var t=0; t<otherSnake.tail.length; t++) {
-            if(otherSnake.tail[t][0] === this.x &&
-               otherSnake.tail[t][1] === this.y ) {
-                   if(this.tail.length > otherSnake.tail.length) {
-                       socket.emit('pop_enemy');
-                   } else {
-                       this.tail.pop();
-                   }
+        if(checkCollision(this.x, this.y, otherSnake.tail)) {
+            if(this.tail.length > otherSnake.tail.length) {
+                socket.emit('pop_enemy');
+            } else {
+                this.tail.pop();
             }
+        }
+
+        if(checkCollision(this.x, this.y, this.tail.slice(1))) {
+            this.tail.pop();
         }
 
         this.tail[0] = [this.x, this.y];
