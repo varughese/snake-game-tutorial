@@ -1,13 +1,13 @@
 var snake;
 var otherSnake;
 var food;
-var scl = 100;
+var scl = 50;
 var HEIGHT = 500;
 var WIDTH = 500;
 
 function setup() {
     createCanvas(WIDTH, HEIGHT);
-    frameRate(12);
+    frameRate(15);
     snake = new Snake();
     otherSnake = new Snake(true);
     food = new Food();
@@ -120,6 +120,16 @@ function Snake(other) {
 
         this.tail[0] = [this.x, this.y];
         if(!this.enemy) socket.emit("coords", [this.x, this.y, this.tail]);
+
+    };
+
+    this.aiControl = function() {
+        if(this.y > food.y) { snake.direction = "UP"; }
+        else if(this.y < food.y) { snake.direction = "DOWN"; }
+        else if(this.y === food.y) {
+            if(this.x > food.x) snake.direction = "LEFT";
+            if(this.x < food.x) snake.direction = "RIGHT";
+        }
     };
 
     this.eat = function() {
