@@ -1,7 +1,7 @@
 var snake;
 var otherSnake;
 var food;
-var scl = 50;
+var scl = 10;
 var HEIGHT = 500;
 var WIDTH = 500;
 
@@ -149,6 +149,7 @@ function Snake(other) {
 }
 
 
+var fast = false;
 function keyPressed() {
   if (keyCode === UP_ARROW) {
     snake.direction = "UP";
@@ -158,5 +159,15 @@ function keyPressed() {
     snake.direction = "RIGHT";
   } else if (keyCode === LEFT_ARROW) {
     snake.direction = "LEFT";
-  }
+} else if(keyCode === 32) {
+    fast = !fast;
+    if(fast) {
+        frameRate(40);
+    } else {
+        frameRate(15);
+    }
+    if(fast && snake.tail.length > 2) {
+        snake.tail.pop();
+    }
+}
 }
